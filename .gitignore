@@ -10,3 +10,5 @@ logs/
 /volumes/
 .DS_Store
 quorum-test-network/*
+
+genesis-playground
