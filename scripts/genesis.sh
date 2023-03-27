@@ -1,9 +1,5 @@
 #!/bin/bash
 
-function clean() {
-  rm -rf $QDQS_DIR
-}
-
 # Generate genesis files, tessera keys, ethereum keys, and node keys
 function generate_genesis() {
   echo "Generating genesis files..."
@@ -41,11 +37,14 @@ function mutate_qdqs() {
   for i in 1 2 3;
   do
       MEMBER_NODE_DIR="$QDQS_DIR/config/nodes/member$i"
+
       echo "Copying new tessera keys for member$i";
       cp $GENESIS_DIR/member$i/tessera.pub $MEMBER_NODE_DIR/tm.pub
       cp $GENESIS_DIR/member$i/tessera.key $MEMBER_NODE_DIR/tm.key
-      echo "New member$i tessera public key:"
-      cat $MEMBER_NODE_DIR/tm.pub
+
+      echo "Copying new Ethereum keys for member$i";
+      cp $GENESIS_DIR/member$i/accountKeystore $MEMBER_NODE_DIR/accountKeystore
+      cp $GENESIS_DIR/member$i/nodekey $MEMBER_NODE_DIR/nodekey
   done
 
   echo "set enhanced genesis mode"
@@ -57,9 +56,9 @@ function mutate_qdqs() {
   sed -i 's/"enablePrivacyEnhancements": false/"enablePrivacyEnhancements": true/g' $QDQS_DIR/config/tessera/data/tessera-config-template.json
 }
 
-clean
-
 QDQS_DIR=./genesis-playground
+rm -rf $QDQS_DIR
+
 GENERATE_GENESIS_OUTPUT=$(generate_genesis $QDQS_DIR)
 
 if [[ $GENERATE_GENESIS_OUTPUT =~ ($QDQS_DIR/[-[:digit:]]+)$ ]]; then 
